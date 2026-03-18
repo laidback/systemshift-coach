@@ -61,3 +61,26 @@ TechBot executes:
 ✅ CI/CD unaffected  
 ✅ systemshift.coach can reference `shiftctl` in docs and onboarding  
 ⚠️ Existing local installs of `lw` will need re-run of install.sh  
+
+---
+
+## Addendum: MCP Server Decision (2026-03-18)
+
+**Decision: shiftctl MCP server is deferred.**
+
+OpenClaw agents (TechBot, ArchBot, LifeBot, LaidbackBot) all have `exec` tool access via `tools.profile=full`. They call `shiftctl` directly as a shell command. No MCP wrapper needed for any current agent.
+
+**MCP becomes relevant only when:**
+- A non-exec agent needs workspace operations (GitHub Copilot, Junie, Claude Desktop, JetBrains AI)
+- An IDE-native AI with MCP support but no shell access needs to invoke shiftctl commands
+
+**mcporter security model (current):**
+- Agents use mcporter in **stdio mode** — process-level isolation, no token needed
+- Each agent has its own memelord SQLite DB (physical separation = access control)
+- HTTP mode + agent tokens = future concern only if a shared mcporter server is introduced
+
+**Not in scope for shiftctl v1:**
+- `shiftctl mcp` subcommand
+- Agent token auth on mcporter
+- Shared memelord HTTP server
+
