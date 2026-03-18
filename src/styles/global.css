@@ -196,20 +196,31 @@ footer {
 }
 .footer-links a:hover { color: var(--text); }
 
-/* ── DE coming soon ───────────────────────────────────────── */
-.de-notice {
-  display: none;
-  background: var(--border);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 20px 24px;
-  margin-top: 40px;
-  color: var(--muted);
-  font-size: 0.95rem;
-  text-align: center;
-}
+/* ── i18n — EN/DE language toggle ────────────────────────── */
+/* Default: show EN, hide DE */
+.de { display: none; }
+.en { display: inline; }
 
-body.lang-de .de-notice { display: block; }
-body.lang-de section > *:not(.de-notice) { opacity: 0.15; pointer-events: none; }
-body.lang-de .hero > * { opacity: 0.15; pointer-events: none; }
-body.lang-de .de-notice { opacity: 1 !important; pointer-events: all !important; }
+/* When lang-de: show DE, hide EN */
+body.lang-de .de { display: inline; }
+body.lang-de .en { display: none; }
+
+/* Block-level elements (p, h1, h2, ul, li etc.) need block not inline */
+p.de, h1.de, h2.de, h3.de, li.de, div.de, section.de { display: none; }
+p.en, h1.en, h2.en, h3.en, li.en, div.en, section.en { display: block; }
+
+body.lang-de p.de,
+body.lang-de h1.de,
+body.lang-de h2.de,
+body.lang-de h3.de,
+body.lang-de li.de,
+body.lang-de div.de,
+body.lang-de section.de { display: block; }
+
+body.lang-de p.en,
+body.lang-de h1.en,
+body.lang-de h2.en,
+body.lang-de h3.en,
+body.lang-de li.en,
+body.lang-de div.en,
+body.lang-de section.en { display: none; }
