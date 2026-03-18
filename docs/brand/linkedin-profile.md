@@ -1,25 +1,24 @@
 # LinkedIn Profile — Lukas Ciszewski
-*systemshift.coach | Last updated: 2026-03-18 | Status: Draft (needs Lukas review)*
+*systemshift.coach | Last updated: 2026-03-18 | Status: Draft*
 
 ---
 
 ## Headline
 
-**Option A (descriptive):**
 ```
 Systemic Coach for IT Professionals | Engineering Manager → Leadership Transitions | 20+ Years in Tech | ISTOB C25
 ```
 
-**Option B (punchier):**
+*Alternative (punchier):*
 ```
 Coaching for people who think in systems and lead them | Systemic Coach | IT & Tech Leadership
 ```
 
-**Recommendation:** Option A for discoverability; Option B if you want to stand out in feed. Switch after 30 days if A gets no traction.
+**Recommendation:** Use Option A for discoverability. Switch to B after 30 days if no traction.
 
 ---
 
-## About Section
+## About
 
 ```
 I work with IT leaders, senior engineers, and tech professionals at inflection points.
@@ -37,32 +36,50 @@ I work with people who want to think more clearly about their situation — and 
 Discovery calls are free and without obligation. If it's a fit, we'll know quickly.
 
 → systemshift.coach
-→ [Book a call: Calendly link — add when ready]
+→ Book a call: [Calendly link — add when ready]
 ```
 
 ---
 
-## Services Section (LinkedIn Services)
+## Experience Highlight
 
-**Service 1: Leadership Transition Coaching**
+*Use this as a pinned LinkedIn post or featured item, or work it into your current role description:*
+
+```
+20+ years in technology — as network engineer, backend developer, DevOps lead, and system architect. I've worked at Telekom scale, shipped production systems, led engineering teams, and navigated the full arc from individual contributor to architect to leader.
+
+That experience is the foundation of my coaching practice. I don't need to explain what a sprint review is, why architecture reviews stall, or why senior engineers resist management tracks. I've lived that terrain.
+
+Now I help others navigate it — as a trained systemic coach (ISTOB C25).
+```
+
+---
+
+## Services (LinkedIn Services Section)
+
+**Leadership Transition Coaching**
 *For engineers and tech professionals moving into management or senior leadership roles.*
 
-**Service 2: Career Clarity Coaching**
-*For senior IT professionals navigating a crossroads — direction, role changes, or what's next.*
+**Career Clarity Coaching**
+*For senior IT professionals at a crossroads — direction, role changes, or what's next.*
 
-**Service 3: Complexity Navigation**
+**Complexity Navigation**
 *For IT leaders working in organisations where the human system has become the harder problem.*
 
 ---
 
-## Featured Section (suggestions)
+## CTA
 
-- Link to systemshift.coach landing page
-- First LinkedIn article (when written) — see checklist in `docs/business/business-plan.md`
+```
+Discovery calls are free and run 30 minutes. No pitch — we figure out if there's a fit.
+
+→ Book at systemshift.coach
+→ Or connect here and send a message
+```
 
 ---
 
-## DE Version (for German-speaking network)
+## DE Version
 
 ### Headline (DE)
 ```
@@ -92,7 +109,8 @@ Kennenlerngespräche sind kostenlos und unverbindlich.
 
 ## Notes for Lukas
 
-- **Update headline first** — 5 minutes, highest visibility change
-- **Calendly link** — add once set up (see business-plan.md checklist item 8)
-- **DE vs EN** — LinkedIn UI language ≠ profile language. You can write EN About and add a DE version via "Add translation" feature on LinkedIn
-- **First post** — not an announcement; an observation about IT orgs (see checklist item 13)
+- **Update headline first** — 5 min, highest visibility change
+- **Calendly link** — add once set up (see `docs/business/business-plan.md` checklist item 8)
+- **DE+EN on LinkedIn** — use "Add translation" feature; write EN first, DE via translation
+- **Experience highlight** — add as a featured post or work into your current Hilti role desc
+- **First post** — not an announcement; a real observation about IT orgs (see checklist item 13)
