@@ -1,72 +1,87 @@
-# ADR-004: Session State Management and Checkpointing Policy
+# ADR-004 — Session State Management & Checkpointing Policy
 
 **Status:** Accepted  
 **Date:** 2026-03-18  
-**Deciders:** Lukas Ciszewski  
-**Context:** OpenClaw multi-agent system (LaidbackBot, TechBot, CoachBot, LifeBot, ArchBot, ShaperBot, ReviewBot)
+**Author:** ShaperBot (challenged and accepted by Lukas Ciszewski)  
+**Scope:** All OpenClaw agents (laidbackbot, techbot, lifebot, reviewbot, archbot, shaperbot, coachbot)
 
 ---
 
 ## Context
 
-OpenClaw agents run as stateful sessions. When a session is restarted (gateway restart, token refresh, manual restart), in-memory state is lost. This includes:
+OpenClaw agent sessions are ephemeral. On restart, all in-memory state is lost:
+- Conversation context (reasoning, decisions made mid-session)
+- In-flight task progress (e.g. TechBot mid-build)
+- A2A messages in-flight (not yet delivered if session dies)
 
-- In-flight task state (what an agent was mid-doing)
-- Active working memory (intermediate results, decisions not yet written)
-- A2A messages in-flight (not yet delivered or acknowledged)
+Three risk tiers were identified:
 
-A restart without checkpointing means an agent resumes with no knowledge of what it was doing. For TechBot mid-build, this means starting from last commit. For CoachBot mid-draft, the draft is gone. For A2A coordination, messages may be silently dropped.
+| Risk | Description | Severity |
+|------|-------------|----------|
+| In-flight task state | TechBot mid-build, ArchBot mid-ADR | ⚠️ High |
+| Active task state | In-memory only, not written to TASKS.md | ⚠️ High |
+| A2A messages in-flight | Session queue in-memory, lost if session dies mid-send | ⚠️ Medium |
+
+TechBot's coding sessions are highest risk — if restarted mid-build, it resumes from last git commit, not last action.
 
 ---
 
 ## Decision
 
-**All agents MUST checkpoint before yielding control or when a restart is anticipated.**
+**All agents MUST checkpoint before yielding or when pre-empted.**
 
-This is a **global rule** across all agents in the OpenClaw fleet.
+### Rule 1 — Task state to TASKS.md
 
-### Checkpointing targets (in priority order):
+Before any agent yields control (completes, pauses, or is about to restart), it MUST update its task entry in `/home/laid/.openclaw/workspace-tech/TASKS.md`:
+- Set status to `in-progress` with a `**Progress:**` note
+- Write what was done, what remains, what the next step is
+- Include any blockers or open questions
 
-1. **memelord** — store insights, decisions, and context summaries as memory entries
-2. **TASKS.md** (per workspace) — write current task state, progress, and next step before any yield or restart
-3. **File system** — partial outputs (drafts, configs, code) must be written to disk before a long pause or handoff
+### Rule 2 — Insight/decision to memelord
 
-### Specific agent rules:
+Any non-trivial decision or insight reached mid-session that isn't captured in a file MUST be stored to memelord before yielding:
+```bash
+cd <workspace> && /home/laid/.npm-global/bin/mcporter call memelord.memory_report type=insight lesson="<decision or state>"
+```
 
-| Agent | Highest risk | Mitigation |
-|---|---|---|
-| TechBot | Mid-build coding session | Write progress + last known state to TASKS.md; commit WIP if in a repo |
-| CoachBot | Mid-draft content | Write draft to file in systemshift repo before yielding |
-| LaidbackBot | A2A coordination state | Log dispatched tasks and pending responses to TASKS.md |
-| LifeBot | Calendar/email mid-task | Write intent + status before any long-running op |
-| All agents | In-flight A2A messages | Treat timeout as delivery (not failure); re-check state on resume |
+### Rule 3 — Code commits before yield
 
-### Pre-restart protocol (when restart is known):
+TechBot specifically: any in-progress code change must be committed (WIP commit acceptable) before yielding. Never leave uncommitted changes as the only record of progress.
 
-1. Write current task + status to workspace `TASKS.md`
-2. Store key context to memelord
-3. Commit any file changes to git (where applicable)
-4. Signal LaidbackBot via A2A that a restart is imminent
+```
+git add . && git commit -m "wip: <description of current state>"
+```
 
-### On resume:
+### Rule 4 — A2A fire-and-move-on
 
-1. Read `TASKS.md` on startup
-2. Query memelord for recent context if task is unclear
-3. Resume from last known checkpoint
+`sessions_send` timeout ≠ failure. Agents must NOT retry A2A in a loop. Send once, move on. If delivery confirmation is critical, write intent to TASKS.md first, then send.
+
+### Rule 5 — Pre-restart checklist
+
+Before a full gateway restart, the initiating agent (or human) should:
+1. Check TASKS.md for any `in-progress` tasks — confirm they have a progress note
+2. Ask active agents to checkpoint (via A2A)
+3. Proceed with restart only after confirmation or timeout
 
 ---
 
 ## Consequences
 
-- **Positive:** Task continuity across restarts; reduced lost-work incidents; clearer handoff state
-- **Positive:** TASKS.md becomes a lightweight coordination surface for LaidbackBot
-- **Negative:** Small overhead — agents must write state before yielding (acceptable tradeoff)
-- **Risk:** Agents that don't implement this remain fragile. TechBot coding sessions are the highest ongoing risk.
+- Agents produce more frequent, smaller TASKS.md updates
+- TechBot makes WIP commits — cleaner audit trail
+- Session restarts become low-risk: all durable state is on disk or in memelord
+- A2A reliability improves: intent written before send, not after
+
+---
+
+## Global Rule
+
+This is a **global rule** — applies to all agents without exception. Each agent's AGENTS.md must include a checkpointing section referencing this ADR.
 
 ---
 
 ## Related
 
-- ADR-001: Phase 1 Architecture
-- AGENTS.md (per workspace): task durability rules
-- memelord: primary cross-session memory store
+- TASK-016 — LifeBot web access
+- TASK-017 — systemshift-coach repo structure
+- ADR-002 — LifeBot web access (query anonymisation)
